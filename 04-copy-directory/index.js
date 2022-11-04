@@ -23,10 +23,11 @@ fsProm.readdir(sourceFolder, {
         .then(() => {
           for (let i = 0; i < fileList.length; i++) {
             fsProm.copyFile(path.resolve(sourceFolder,fileList[i]),path.resolve(targetFolder,fileList[i]))
-            .then(()=>console.log(`file ${i} copying complete`));
+            .then(()=>{
+              console.log(`file ${i} copying complete`);
+          });
           }
         })
-        .then(()=>console.log('files copying complete'))
         .catch(err => {
           console.error(err);
         });
