@@ -28,7 +28,6 @@ fsProm.readdir(sourceFolder, {
                   console.log('file in files-copy folder has to be removed: ',file);
                   fs.rm(path.resolve(targetFolder,file),(err) => {
                     if(err){
-                        // File deletion failed
                         console.error(err.message);
                         return;
                     }
@@ -54,5 +53,5 @@ fsProm.readdir(sourceFolder, {
    
   })
   .catch(err => {
-    console.error(err);
+    console.error(err.message);
   });
