@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const fsProm = require('fs/promises');
-//const { rejects } = require('assert');
 
 const copyFrom = path.resolve(__dirname, 'files');
 const copyTo = path.resolve(__dirname, 'files-copy');
@@ -42,7 +41,6 @@ fsProm.readdir(sourceFolder, {
                       console.log('\ncopy/update directory done');
                       resolve(true);
                     }
-                    
                   });
                 }
               }
@@ -82,8 +80,4 @@ fsProm.readdir(sourceFolder, {
 async function showStatus () {
 console.log('copy/update operation success status: ',await copyDir (copyFrom,copyTo));
 }
-showStatus();
-function showMe(copy) {
-  console.log(copy);
-}
-module.exports= {copyDir, showMe};
+
