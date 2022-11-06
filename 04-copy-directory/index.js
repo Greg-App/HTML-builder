@@ -26,7 +26,6 @@ fsProm.readdir(sourceFolder, {
         fsProm.readdir(targetFolder)
           .then((oldTargetList) => {
             if (oldTargetList.length > 0) {
-              
               for (let file of oldTargetList) {
                 if (!fileList.includes(file)) {
                   updFlag[1]+=1;
@@ -84,4 +83,7 @@ async function showStatus () {
 console.log('copy/update operation success status: ',await copyDir (copyFrom,copyTo));
 }
 showStatus();
-module.exports= {copyDir};
+function showMe(copy) {
+  console.log(copy);
+}
+module.exports= {copyDir, showMe};
