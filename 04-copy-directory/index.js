@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const fsProm = require('fs/promises');
-
 const copyFrom = path.resolve(__dirname, 'files');
 const copyTo = path.resolve(__dirname, 'files-copy');
 async function copyDir (sourceFolder,targetFolder) {
@@ -80,4 +79,5 @@ fsProm.readdir(sourceFolder, {
 async function showStatus () {
 console.log('copy/update operation success status: ',await copyDir (copyFrom,copyTo));
 }
+showStatus ();
 
