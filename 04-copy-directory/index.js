@@ -28,7 +28,7 @@ fsProm.readdir(sourceFolder, {
                 if (!fileList.includes(file)) {
                   updFlag[1]+=1;
                   console.log('file in files-copy folder has to be removed: ', file);
-                  fs.rm(path.resolve(targetFolder, file), (err) => {
+                  fs.rm(path.resolve(targetFolder, file), {recursive: true, force:true}, (err) => {
                     if (err) {
                       console.error(err.message);
                       reject(false);

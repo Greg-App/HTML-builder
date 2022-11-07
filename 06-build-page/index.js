@@ -13,7 +13,6 @@ async function getFilesArr(folder, ext) {
 }
 async function getFileContentObjArray(folder, ext) {
   const filesArr = await getFilesArr(folder, ext).then(res => res);
-  //console.log('File list to bundle:', filesArr);
   const stylesArrProm = Promise.all(filesArr.map((elem) => {
     return fsProm.readFile(path.resolve(folder, elem), 'utf-8');
   }));
@@ -30,7 +29,6 @@ async function appendFileContent(trgtFilePath, dataArr) {
   const fileContent = dataArr
     .map((elem) => Object.values(elem)[0])
     .join('\n');
-  //console.log('\nNew bundle.css file:\n-------------------\n', fileContent);
   return fsProm.writeFile(trgtFilePath, fileContent);
 }
 /*-----Copy directory function---------START------*/
@@ -38,7 +36,7 @@ const copyFrom = path.resolve(__dirname, 'assets');
 const copyTo = path.resolve(__dirname, 'project-dist', 'assets');
 
 async function copyDir(sourceFolder, targetFolder) {
-  return await new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     let updFlag = [false, 0, 0];
     fsProm.readdir(sourceFolder, {
         withFileTypes: true
@@ -63,16 +61,14 @@ async function copyDir(sourceFolder, targetFolder) {
                   updFlag[2] += 1;
                   fsProm.copyFile(path.resolve(sourceFolder, fileList[i]), path.resolve(targetFolder, fileList[i]))
                     .then(() => {
-                      //console.log(`copy/update file complete from files to files-copy: ${fileList[i]}`);
+                      console.log(`copy/update file complete from assets to project-dist/assets: ${fileList[i]}`);
                       updFlag[2] -= 1;
                       if (updFlag[1] === 0 && updFlag[2] === 0) {
-                        //console.log('\ncopy/update directory done');
+                        console.log('copy/update directory done\n');
                         resolve(true);
                       }
                     })
-                    .catch(err => {
-                      console.error(err);
-                      console.log('err for copyFile');
+                    .catch((err) => {
                       reject(false);
                       throw err;
                     });
@@ -80,28 +76,30 @@ async function copyDir(sourceFolder, targetFolder) {
               });
           })
           .catch(err => {
-            console.error(err.message);
-            console.log('err for mkdir');
             reject(false);
             throw err;
           });
       })
       .catch(err => {
-        console.error(err.message);
-        console.log('err for readdir');
         throw err;
       });
   });
 }
-
 /*-----Copy directory function---------END------*/
 
 async function buildPage() {
+  const del = new Promise(function (resolve, reject) {
+    fs.rm(path.resolve(__dirname, 'project-dist', 'assets'), {
+      recursive: true,
+      force: true
+    }, () => {
+      resolve();
+    });
+  });
+  await del;
   let tempHtml = await fs.promises.readFile(path.resolve(__dirname, 'template.html'), 'utf-8');
-  //console.log(tempHtml);
   let compHtmlArr = await getFileContentObjArray(path.resolve(__dirname, 'components'), 'html');
   compHtmlArr = compHtmlArr.map((elem) => Object.entries(elem).flat());
-  //console.log(compHtmlArr);
   for (const comp of compHtmlArr) {
     if (tempHtml.match(`{{${comp[0]}}}`)) {
       tempHtml = tempHtml.replace(`{{${comp[0]}}}`, `${comp[1]}`);
@@ -113,22 +111,6 @@ async function buildPage() {
   await fsProm.writeFile(path.resolve(__dirname, 'project-dist', 'index.html'), tempHtml);
   const styles = await getFileContentObjArray(path.resolve(__dirname, 'styles'), 'css');
   await appendFileContent(path.resolve(__dirname, 'project-dist', 'style.css'), styles);
-  const del= new Promise (function (resolve,reject) {
-    const date =new Date();
-    console.log('start',date.getMilliseconds());
-    fs.rm(path.resolve(__dirname,'project-dist','assets'),{recursive:true,force:true},()=>{
-      const dat =new Date();
-      console.log('end',dat.getMilliseconds());
-      resolve();});  
-  });
-   await del;
-   await copyDir(copyFrom, copyTo);
-   //await copyDir(copyFrom, copyTo);
-  
-  //await copyDir(copyFrom, copyTo);
-  return tempHtml;
+  await copyDir(copyFrom, copyTo);
 }
-buildPage().then(res=>console.log('\n---------------------------\nBuild page done'));
-//.then(res=>console.log(res))
-
-console.log(path.dirname('index.js'));
+buildPage();
