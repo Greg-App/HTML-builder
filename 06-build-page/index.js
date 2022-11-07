@@ -2,9 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const fsProm = require('fs/promises');
 
-
-const tempHtml = fs.promises.readFile(path.resolve(__dirname, 'template.html'));
-
 async function getFilesArr(folder, ext) {
   const fileList = await fsProm.readdir(folder, {
     withFileTypes: true
@@ -66,15 +63,16 @@ async function copyDir(sourceFolder, targetFolder) {
                   updFlag[2] += 1;
                   fsProm.copyFile(path.resolve(sourceFolder, fileList[i]), path.resolve(targetFolder, fileList[i]))
                     .then(() => {
-                      console.log(`copy/update file complete from files to files-copy: ${fileList[i]}`);
+                      //console.log(`copy/update file complete from files to files-copy: ${fileList[i]}`);
                       updFlag[2] -= 1;
                       if (updFlag[1] === 0 && updFlag[2] === 0) {
-                        console.log('\ncopy/update directory done');
+                        //console.log('\ncopy/update directory done');
                         resolve(true);
                       }
                     })
                     .catch(err => {
                       console.error(err);
+                      console.log('err for copyFile');
                       reject(false);
                       throw err;
                     });
@@ -83,13 +81,14 @@ async function copyDir(sourceFolder, targetFolder) {
           })
           .catch(err => {
             console.error(err.message);
-            console.log('AAAAAAAAA999999AAAAAAA');
+            console.log('err for mkdir');
             reject(false);
             throw err;
           });
       })
       .catch(err => {
         console.error(err.message);
+        console.log('err for readdir');
         throw err;
       });
   });
@@ -122,8 +121,9 @@ async function buildPage() {
       console.log('end',dat.getMilliseconds());
       resolve();});  
   });
-  await del;
+   await del;
    await copyDir(copyFrom, copyTo);
+   //await copyDir(copyFrom, copyTo);
   
   //await copyDir(copyFrom, copyTo);
   return tempHtml;
